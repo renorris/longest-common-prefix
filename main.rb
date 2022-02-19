@@ -22,20 +22,21 @@ samples.each do |sample|
   puts sample
 end
 
+# Find smallest word length of the sample set
+# (number of times to iterate checking for matches)
+min_length = samples[0].length
+samples.each do |sample|
+  if sample.length < min_length
+    min_length = sample.length
+  end
+end
+
 # Build matches
 matches = {}
 
-# Utilize loop with index to track what character we're on for each sample
-0.step do |i|
-  should_reiterate = false
+# Iterate through samples to match repeating prefixes
+min_length.times do |i|
   samples.each do |sample|
-    # Skip if we've already reached the end of a sample (in order to avoid OOB logic bugs)
-    next if sample.length < i + 1
-
-    # Set "should_reiterate" flag to let the iterator know we haven't reached the end of this word and will require
-    # at least one more iteration to complete matching the word
-    should_reiterate = true
-
     # Select relevant characters for our sample
     match = sample[0..i]
     if matches[match]
@@ -53,9 +54,6 @@ matches = {}
       matches.delete(key)
     end
   end
-
-  # Break the loop if we're done iterating through all the words
-  break unless should_reiterate
 end
 
 # Calculate the result length from the remaining match keys
